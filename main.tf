@@ -63,6 +63,42 @@ resource "aws_subnet" "egress_tgw_az1" {
   }
 }
 
+resource "aws_route_table" "egress_tgw" {
+  vpc_id = aws_vpc.egress.id
+
+  route {
+    cidr_block = "10.0.0.0/8"
+    transit_gateway_id = aws_ec2_transit_gateway.main.id
+  }
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.egress.id
+  }
+
+  tags = {
+    Name = "egress_tgw_rt_table"
+  }
+}
+
+resource "aws_route_table" "egress_vpc" {
+  vpc_id = aws_vpc.egress.id
+
+  route {
+    cidr_block = "10.0.0.0/8"
+    transit_gateway_id = aws_ec2_transit_gateway.main.id
+  }
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.egress.id
+  }
+
+  tags = {
+    Name = "egress_tgw_rt_table"
+  }
+}
+
 resource "aws_vpc" "spoke_a" {
   cidr_block = "10.1.0.0/16"
 }
