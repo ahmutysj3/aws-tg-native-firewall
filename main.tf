@@ -95,7 +95,7 @@ resource "aws_route_table" "egress_vpc" {
   }
 
   tags = {
-    Name = "egress_tgw_rt_table"
+    Name = "egress_vpc_rt_table"
   }
 }
 
