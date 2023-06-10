@@ -205,7 +205,7 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "egress" {
 }
 
 resource "aws_ec2_transit_gateway_vpc_attachment" "spoke_a" {
-  subnet_ids         = [aws_subnet.spoke_a_tgw_az1, aws_subnet.spoke_a_tgw_az2]
+  subnet_ids         = [aws_subnet.spoke_a_tgw_az1.id, aws_subnet.spoke_a_tgw_az2.id]
   transit_gateway_id = aws_ec2_transit_gateway.main.id
   vpc_id             = aws_vpc.spoke_a.id
 }
