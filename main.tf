@@ -115,7 +115,7 @@ resource "aws_route_table" "security_firewall_az1" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    nat_gateway_id = "aws_nat_gateway.security_nat_az1.id"
+    nat_gateway_id = aws_nat_gateway.security_nat_az1.id
   }
 
   tags = {
@@ -133,7 +133,7 @@ resource "aws_route_table" "security_firewall_az2" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    nat_gateway_id = "aws_nat_gateway.security_nat_az2.id"
+    nat_gateway_id = aws_nat_gateway.security_nat_az2.id
   }
 
   tags = {
