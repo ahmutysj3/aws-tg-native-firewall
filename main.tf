@@ -31,14 +31,25 @@ resource "aws_internet_gateway" "egress" {
 }
 
 resource "aws_nat_gateway" "egress" {
-  connectivity_type = "private"
+  connectivity_type = "public"
   subnet_id         = aws_subnet.egress_nat_az1.id
-
+  allocation_id = aws_eip.egress_ngw.id
   tags = {
-    Name = "egress_nat"
+    Name = "egress_ngw"
   }
+
+  depends_on = [ aws_internet_gateway.egress ]
+
 }
 
+resource "aws_eip" "egress_ngw" {
+  vpc        = true
+  tags = {
+    Name = "egress_ngw_eip"
+  }
+
+  depends_on = [ aws_internet_gateway.egress ]
+}
 resource "aws_route_table" "egress_tgw" {
   vpc_id = aws_vpc.egress.id
 
