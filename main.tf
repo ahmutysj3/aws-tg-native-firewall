@@ -106,9 +106,9 @@ resource "aws_ec2_transit_gateway" "main" {
 }
   
 resource "aws_ec2_transit_gateway_vpc_attachment" "main" {
-  for_each = {for vpck, vpc in data.aws_vpc.details : vpc.tags.Name => vpc.id }
+  for_each = {for vpck, vpc in  merge(aws_vpc.spokes,{security = aws_vpc.security}) : vpck => vpc.id}
   vpc_id = each.value
-  subnet_ids = data.aws_subnets.all[each.value].ids
+  subnet_ids = [ for sub in local.transit_gateway_subnets : sub.id if sub.vpc_id == each.value]
   transit_gateway_id = aws_ec2_transit_gateway.main.id
   transit_gateway_default_route_table_association = false
   transit_gateway_default_route_table_propagation = false
