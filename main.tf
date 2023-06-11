@@ -2,6 +2,14 @@ resource "aws_vpc" "security" {
   cidr_block = "192.168.0.0/16"
 }
 
+# {for k, v in data.aws_subnet.security_subnets_details : v.tags.Name => v.tags.purpose }
+# ^ gets the name and purpose of the subnets
+
+resource "aws_route_table_association" "security" {
+  for_each = {for k, v in data.aws_subnet.security_subnets_details : v.tags.Name  => k }
+  subnet_id = each.value
+
+}
 resource "aws_subnet" "security_firewall_az1" {
   vpc_id            = aws_vpc.security.id
   cidr_block        = "192.168.10.0/25"
@@ -120,7 +128,7 @@ resource "aws_route_table" "security_firewall_az1" {
 
   tags = {
     Name = "security_firewall_rt_table"
-  }
+    }
 }
 
 resource "aws_route_table" "security_firewall_az2" {
@@ -283,11 +291,28 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
+locals {
+  az1 = data.aws_availability_zones.available.names[0]
+  az2 = data.aws_availability_zones.available.names[1]
+}
+
 data "aws_subnets" "transit_gateway" {
   filter {
     name   = "tag:purpose"
     values = ["transit_gateway"]
   }
+}
+
+data "aws_subnets" "security_subnets" {
+  filter {
+    name   = "vpc-id"
+    values = [aws_vpc.security.id]
+  }
+}
+
+data "aws_subnet" "security_subnets_details" {
+  for_each = toset(data.aws_subnets.security_subnets.ids)
+  id       = each.value
 }
 
 data "aws_subnet" "transit_gateway_details" {
