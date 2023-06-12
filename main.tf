@@ -254,6 +254,13 @@ resource "aws_ec2_transit_gateway_route" "to_firewall" {
   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.main["security"].id
 }
 
+resource "aws_ec2_transit_gateway_route" "null_routes" {
+  for_each = local.az_map
+  destination_cidr_block         = aws_vpc.spokes[each.key].cidr_block
+  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.main["security"].id
+  blackhole = true
+}
+
 resource "aws_ec2_transit_gateway_route" "to_spokes" {
   for_each = local.az_map
   destination_cidr_block         = aws_vpc.spokes[each.key].cidr_block
