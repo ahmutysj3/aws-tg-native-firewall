@@ -125,6 +125,10 @@ resource "aws_route_table" "security_az1" {
   for_each = {for subk, sub in aws_subnet.security_az1 : subk => sub }
   vpc_id   = aws_vpc.security.id
 
+  tags = {
+    Name = "security_az1_${each.key}_rt_table"
+  }
+
   /* dynamic "route" {
     for_each = {for subk, sub in aws_subnet.security_az1 : subk => sub if sub.tags.purpose == "transit_gateway" && each.key == sub.tags.purpose}
     content {
@@ -175,6 +179,9 @@ resource "aws_route_table" "security_az2" {
   for_each = {for subk, sub in aws_subnet.security_az2 : subk => sub }
   vpc_id   = aws_vpc.security.id
 
+  tags = {
+    Name = "security_az2_${each.key}_rt_table"
+  }
   /* dynamic "route" {
     for_each = {for subk, sub in aws_subnet.security_az2 : subk => sub if sub.tags.purpose == "transit_gateway" && each.key == sub.tags.purpose}
     content {
