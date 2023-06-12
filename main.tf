@@ -242,3 +242,21 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "main" {
   transit_gateway_default_route_table_association = false
   transit_gateway_default_route_table_propagation = false
 }
+
+resource "aws_ec2_transit_gateway_route_table" "main" {
+  for_each = toset(["security","spokes"])
+  transit_gateway_id = aws_ec2_transit_gateway.main.id
+}
+
+resource "aws_ec2_transit_gateway_route" "to_firewall" {
+  destination_cidr_block         = "0.0.0.0/0"
+  transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.main["security"].id
+  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.main["security"].id
+}
+
+resource "aws_ec2_transit_gateway_route" "to_spokes" {
+  for_each = local.az_map
+  destination_cidr_block         = aws_vpc.spokes[each.key].cidr_block
+  transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.main[each.key].id
+  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.main["spokes"].id
+}
