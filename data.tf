@@ -19,6 +19,12 @@ locals {
 }
 
 
+locals {
+spokes_tgw_subnets = {for k, v in aws_subnet.spokes_tgw : v.tags.Name => {purpose = v.tags.purpose, sub_id = v.id, az = v.tags.az} }
+spokes_private_subnets = {for k, v in aws_subnet.spokes_private : v.tags.Name => {purpose = v.tags.purpose, sub_id = v.id, az = v.tags.az} }
+spokes_all_subnets = merge(local.spokes_tgw_subnets, local.spokes_private_subnets)
+}
+
 data "aws_subnets" "transit_gateway" {
   filter {
     name   = "tag:purpose"
