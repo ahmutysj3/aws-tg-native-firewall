@@ -228,7 +228,7 @@ resource "aws_ec2_transit_gateway" "main" {
   default_route_table_association = "disable"
   default_route_table_propagation = "disable"
   dns_support                     = "enable"
-  transit_gateway_cidr_blocks     = local.transit_gateway_cidr_blocks
+  transit_gateway_cidr_blocks     = [for subnet in data.aws_subnet.transit_gateway_details : subnet.cidr_block]
   tags = {
     Name = "main_transit_gateway"
   }
